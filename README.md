@@ -1,21 +1,69 @@
-[![MasterHead](https://www.hogarmania.com/archivos/202104/aspectos-curiosos-pinguinos-portada-1280x720x80xX.jpg)](https://github.com/MatiiiBL)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img alt="Matías Blanco. Computer Engineering at Columbia University. I build performance-critical software from scratch, from SIMD vector search to LLM inference engines." src="assets/banner-light.svg" width="100%">
+</picture>
 
-<h1 align="center">Hi 👋, I'm Matías</h1>
-<h3 align="center">A passionate junior developer from Uruguay</h3>
+I'm a Computer Engineering student at Columbia (AI minor, class of 2029), originally from Montevideo. I like problems where the code has to be fast *and* right. I profile before I optimize, check every fast path against a slow reference, and benchmark against the libraries people already use.
 
-<img align="right" alt="Coding" width="400" src="https://th.bing.com/th/id/R.8d621f66f551b6a39072473d52280ff0?rik=pxe6U%2fxnjrV9eQ&pid=ImgRaw&r=0">
+Right now I'm an AI engineer at **Forva Systems**, building the AI backend of an EMS platform for ambulance crews, and I'm on **Columbia Formula Racing**.
 
-<p align="left"> <img src="https://komarev.com/ghpvc/?username=matiiibl&label=Profile%20views&color=32b40e&style=flat" alt="matiiibl" /> </p>
+[LinkedIn](https://www.linkedin.com/in/matias-blanco-uy/) · [matias.blancobalaguer@columbia.edu](mailto:matias.blancobalaguer@columbia.edu)
 
-- 🔭 I’m currently working on **MiEsi**
+### Selected work
 
-- 🌱 I’m currently learning **ASP.NET Core**
+<a href="https://github.com/MatiiiBL/HNSW_vector_search">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/vecdex-dark.svg">
+    <img alt="vecdex: HNSW vector search in C++20. 18,000 queries/s at 96.4% recall@10 on SIFT1M, 1.78× FAISS HNSW with the same parameters, and a 1M-vector build in 28 s on 10 threads." src="assets/vecdex-light.svg" width="100%">
+  </picture>
+</a>
 
-<h3 align="left">Connect with me:</h3>
-<p align="left">
-</p>
+<a href="https://github.com/MatiiiBL/LLM-inference-engine">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/minillm-dark.svg">
+    <img alt="minillm: a from-scratch Llama-architecture inference engine in C++20 running SmolLM2-135M. Greedy tokens match PyTorch exactly; Q8_0 weights are 3.8× smaller." src="assets/minillm-light.svg" width="100%">
+  </picture>
+</a>
 
-<h3 align="left">Languages and Tools:</h3>
-<p align="left"> <a href="https://developer.android.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/android/android-original-wordmark.svg" alt="android" width="40" height="40"/> </a> <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/gnu_bash/gnu_bash-icon.svg" alt="bash" width="40" height="40"/> </a> <a href="https://www.w3schools.com/cs/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/> </a> <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/> </a> <a href="https://dart.dev" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/dartlang/dartlang-icon.svg" alt="dart" width="40" height="40"/> </a> <a href="https://dotnet.microsoft.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/dot-net/dot-net-original-wordmark.svg" alt="dotnet" width="40" height="40"/> </a> <a href="https://www.figma.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/figma/figma-icon.svg" alt="figma" width="40" height="40"/> </a> <a href="https://firebase.google.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg" alt="firebase" width="40" height="40"/> </a> <a href="https://flutter.dev" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/flutterio/flutterio-icon.svg" alt="flutter" width="40" height="40"/> </a> <a href="https://git-scm.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/> </a> <a href="https://hive.apache.org/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/apache_hive/apache_hive-icon.svg" alt="hive" width="40" height="40"/> </a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> </a> <a href="https://www.java.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" alt="java" width="40" height="40"/> </a> <a href="https://www.linux.org/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="40" height="40"/> </a> <a href="https://mariadb.org/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/mariadb/mariadb-icon.svg" alt="mariadb" width="40" height="40"/> </a> <a href="https://www.microsoft.com/en-us/sql-server" target="_blank" rel="noreferrer"> <img src="https://www.svgrepo.com/show/303229/microsoft-sql-server-logo.svg" alt="mssql" width="40" height="40"/> </a> <a href="https://www.mysql.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="40" height="40"/> </a> <a href="https://www.photoshop.com/en" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/photoshop/photoshop-line.svg" alt="photoshop" width="40" height="40"/> </a> <a href="https://www.postgresql.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> <a href="https://postman.com" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" alt="postman" width="40" height="40"/> </a> <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/> </a> </p>
+<a href="https://github.com/MateoVidalS/makecu-guante">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/memo-dark.svg">
+    <img alt="memo, AI category winner at makeCU: a tendon-driven stroke-rehab glove. I owned the webcam hand tracking." src="assets/memo-light.svg" width="100%">
+  </picture>
+</a>
 
-<p>&nbsp;<img align="center" src="https://github-readme-stats.vercel.app/api?username=matiiibl&show_icons=true&locale=en" alt="matiiibl" /></p>
+<a href="https://github.com/MatiiiBL/housing-energy-assistance">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/wattsgood-dark.svg">
+    <img alt="WattsGood, 1st place at an 8-hour hackathon: three orchestrated Claude agents that match households to energy assistance." src="assets/wattsgood-light.svg" width="100%">
+  </picture>
+</a>
+
+<a href="https://github.com/MatiiiBL/ShellC">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/shellc-dark.svg">
+    <img alt="ShellC: a bash-like Unix shell in C with no heap allocation." src="assets/shellc-light.svg" width="100%">
+  </picture>
+</a>
+
+### Experience
+
+**Forva Systems** · AI Engineer · New York · Dec 2025 – present<br>
+AI backend of an EMS platform for EMTs and paramedics. I designed the anti-hallucination guardrails for clinical LLM extraction (schema-constrained outputs, verbatim-quote provenance, gap-aware context windows, human sign-off on every medication) and a dev/held-out eval harness that scores word error rate, medical-term survival and number grounding.
+
+**Y Combinator Startup School** · Selected participant · San Francisco · Jul 2026<br>
+Picked from 30,000+ applicants. In the 48-hour build sprint I wrote an agentic Python pipeline that runs parallel LLM summarization over 2,000+ research PDFs.
+
+**AdAstra** · Software Engineer Intern · Montevideo · Sep – Dec 2024<br>
+Full-stack social platform in C#, React, PostgreSQL and Python. Deployed Gemma 3 on-premise to flag AI-generated images and stop fraud.
+
+### Toolbox
+
+**Systems** &nbsp; `C++20` `C` `CMake` `NEON SIMD` `POSIX` `Linux`<br>
+**Correctness** &nbsp; `ASan` `UBSan` `TSan` `libFuzzer` `Valgrind` `GitHub Actions`<br>
+**ML** &nbsp; `PyTorch` `NumPy` `pybind11` `safetensors` `MediaPipe` `LLM agents & evals`<br>
+**Product** &nbsp; `TypeScript` `React` `Node.js` `C# / ASP.NET Core` `PostgreSQL` `Flutter`
+
+Spanish (native) · English (fluent) · Portuguese (advanced) · Chinese (learning)
+
+<sub>The graphics on this page are drawn by <a href="scripts/render.py">scripts/render.py</a>; the vecdex chart plots the project's raw benchmark CSVs.</sub>

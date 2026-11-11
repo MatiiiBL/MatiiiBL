@@ -1,15 +1,22 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-  <img alt="Matías Blanco. Computer Engineering at Columbia University. I build performance-critical software from scratch, from SIMD vector search to LLM inference engines." src="assets/banner-light.svg" width="100%">
+  <img alt="Matías Blanco. Computer Engineering at Columbia University. I build fast, verified systems from scratch: a RISC-V SoC, SIMD vector search, LLM inference." src="assets/banner-light.svg" width="100%">
 </picture>
 
-I'm a Computer Engineering student at Columbia (AI minor, class of 2029), originally from Montevideo. I like problems where the code has to be fast *and* right. I profile before I optimize, check every fast path against a slow reference, and benchmark against the libraries people already use.
+I'm a Computer Engineering student at Columbia (AI minor, class of 2029), originally from Montevideo. I like problems where the system has to be fast *and* right, from RTL to LLM pipelines. I profile before I optimize, check every fast path against a slow reference, and benchmark against the libraries people already use.
 
 Right now I'm an AI engineer at **Forva Systems**, building the AI backend of an EMS platform for ambulance crews, and I'm on **Columbia Formula Racing**.
 
 [LinkedIn](https://www.linkedin.com/in/matias-blanco-uy/) · [matias.blancobalaguer@columbia.edu](mailto:matias.blancobalaguer@columbia.edu)
 
 ### Selected work
+
+<a href="https://github.com/MatiiiBL/riscv-npu-soc">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/pulse-dark.svg">
+    <img alt="Pulse: a RISC-V SoC in SystemVerilog, a 5-stage RV32IM CPU driving an 8×8 INT8 systolic-array NPU. MNIST runs 115× faster on the NPU than on the CPU, the NPU sustains 58.9 of 64 MACs per cycle, and the CPU scores 2.86 CoreMark/MHz at 40 MHz on an ECP5 FPGA." src="assets/pulse-light.svg" width="100%">
+  </picture>
+</a>
 
 <a href="https://github.com/MatiiiBL/HNSW_vector_search">
   <picture>
@@ -22,6 +29,13 @@ Right now I'm an AI engineer at **Forva Systems**, building the AI backend of an
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/minillm-dark.svg">
     <img alt="minillm: a from-scratch Llama-architecture inference engine in C++20 running SmolLM2-135M. Greedy tokens match PyTorch exactly; Q8_0 weights are 3.8× smaller." src="assets/minillm-light.svg" width="100%">
+  </picture>
+</a>
+
+<a href="https://github.com/MatiiiBL/precis">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/precis-dark.svg">
+    <img alt="Précis: LLM agents that read and verify thousands of research papers in parallel. 166 papers/min under simulated API rate limits, no request paid twice after a SIGKILL, 2,896 arXiv papers parsed." src="assets/precis-light.svg" width="100%">
   </picture>
 </a>
 
@@ -59,6 +73,7 @@ Full-stack social platform in C#, React, PostgreSQL and Python. Deployed Gemma 3
 
 ### Toolbox
 
+**Hardware** &nbsp; `SystemVerilog` `RISC-V` `Verilator` `cocotb` `Yosys / nextpnr` `ECP5 FPGA`<br>
 **Systems** &nbsp; `C++20` `C` `CMake` `NEON SIMD` `POSIX` `Linux`<br>
 **Correctness** &nbsp; `ASan` `UBSan` `TSan` `libFuzzer` `Valgrind` `GitHub Actions`<br>
 **ML** &nbsp; `PyTorch` `NumPy` `pybind11` `safetensors` `MediaPipe` `LLM agents & evals`<br>

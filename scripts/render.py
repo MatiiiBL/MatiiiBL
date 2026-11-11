@@ -351,9 +351,9 @@ def hnsw_scene():
 def banner(t, mode):
     W, H = 1000, 300
     svg = Svg(W, H, "Matías Blanco",
-              "Matías Blanco, Computer Engineering at Columbia University. I build "
-              "performance-critical software from scratch, from SIMD vector search to LLM "
-              "inference engines. Illustration: a greedy search descending a three-layer HNSW graph.")
+              "Matías Blanco, Computer Engineering at Columbia University. I build fast, verified "
+              "systems from scratch: a RISC-V SoC, SIMD vector search, LLM inference. "
+              "Illustration: a greedy search descending a three-layer HNSW graph.")
     card(svg, t, W, H)
 
     # faint dot grid that fades in toward the right
@@ -369,8 +369,8 @@ def banner(t, mode):
     x0 = 46
     eyebrow(svg, t, "Computer Engineering · Columbia University", x0, 72, 13)
     svg.text(F["disp"], "Matías Blanco", x0 - 3, 140, 62, t["text"], tracking=-0.02)
-    for i, line in enumerate(["I build performance-critical software from scratch,",
-                              "from SIMD vector search to LLM inference engines."]):
+    for i, line in enumerate(["I build fast, verified systems from scratch:",
+                              "a RISC-V SoC, SIMD vector search, LLM inference."]):
         svg.text(F["reg"], line, x0, 184 + i * 29, 20.5, t["text2"])
 
     xm = x0
@@ -608,6 +608,217 @@ def vecdex(t, mode):
     return svg
 
 
+# ---------------------------------------------------------------------------- diagrams
+
+
+class Flow:
+    """Boxes and arrows for the block diagrams. Box (x, y) is its left edge and vertical center."""
+
+    def __init__(self, svg, t):
+        self.svg, self.t = svg, t
+        svg.defs.append(f'<marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" '
+                        f'markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" '
+                        f'fill="none" stroke="{t["text3"]}" stroke-width="1.4" '
+                        f'stroke-linecap="round" stroke-linejoin="round"/></marker>')
+
+    def box(self, label, x, y, sub=None, accent=False, w=None, h=None, size=12):
+        svg, t = self.svg, self.t
+        w = w or max(F["mono"].width(label, size), F["mono"].width(sub or "", 10.5)) + 22
+        h = h or (40 if sub else 28)
+        stroke = t["accent"] if accent else t["border"]
+        svg.add(f'<rect x="{n(x)}" y="{n(y - h / 2)}" width="{n(w)}" height="{n(h)}" rx="7" '
+                f'fill="{t["card"]}" stroke="{stroke}"' + (' stroke-opacity="0.7"' if accent else '')
+                + '/>')
+        if sub:
+            svg.text(F["monom"], label, x + w / 2, y - 2, size, t["text"], anchor="middle")
+            svg.text(F["mono"], sub, x + w / 2, y + 13, 10.5, t["text3"], anchor="middle")
+        else:
+            svg.text(F["monom"], label, x + w / 2, y + size * 0.36, size, t["text"], anchor="middle")
+        return w
+
+    def arrow(self, x1, y1, x2, y2, both=False):
+        start = ' marker-start="url(#ar)"' if both else ""
+        self.svg.add(f'<line x1="{n(x1)}" y1="{n(y1)}" x2="{n(x2)}" y2="{n(y2)}" '
+                     f'stroke="{self.t["text3"]}" stroke-width="1.2" marker-end="url(#ar)"{start}/>')
+
+    def row(self, items, x, y, gap=22):
+        spans = []
+        for k, (label, sub, acc) in enumerate(items):
+            w = self.box(label, x, y, sub, acc)
+            spans.append((x, x + w))
+            if k < len(items) - 1:
+                self.arrow(x + w + 3, y, x + w + gap - 3, y)
+            x += w + gap
+        return spans
+
+    def elbow(self, xa, ya, xb, yb):
+        mid = (ya + yb) / 2
+        self.svg.add(f'<path d="M{n(xa)} {n(ya)} V{n(mid)} H{n(xb)} V{n(yb - 3)}" fill="none" '
+                     f'stroke="{self.t["text3"]}" stroke-width="1.2" marker-end="url(#ar)"/>')
+
+
+def panel(svg, t, H, title, subtitle):
+    px, py, pw, ph = 498, 24, 478, H - 48
+    svg.add(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="10" fill="{t["card2"]}" '
+            f'stroke="{t["grid"]}"/>')
+    svg.text(F["semi"], title, px + 24, py + 32, 14.5, t["text"])
+    svg.text(F["mono"], subtitle, px + 24, py + 52, 11.5, t["text3"])
+    return px, py, pw, ph
+
+
+# ---------------------------------------------------------------------------- pulse
+
+
+def pulse(t, mode):
+    W = 1000
+    svg = Svg(W, 0, "Pulse: a RISC-V SoC with an INT8 systolic-array NPU",
+              "A 5-stage pipelined RV32IM CPU driving an 8 by 8 INT8 systolic-array NPU, verified "
+              "against a C++ reference simulator and closed at 40 MHz on a Lattice ECP5 FPGA. MNIST "
+              "runs 115 times faster on the NPU than on the CPU alone; the NPU sustains 58.9 of 64 "
+              "MACs per cycle; the CPU scores 2.86 CoreMark/MHz. Diagram: the CPU, instruction "
+              "memory, the NPU and banked data memory shared through a 32-bit CPU port and a "
+              "16-byte-per-cycle DMA port.")
+    x = 40
+    bottom = project_left(
+        svg, t, x, "Hardware · SystemVerilog", "Pulse", "MatiiiBL/riscv-npu-soc",
+        "A 5-stage pipelined RV32IM CPU driving an 8×8 INT8 systolic-array NPU with its own DMA, "
+        "checked instruction by instruction against a C++ reference simulator and closed at "
+        "40 MHz on an ECP5 FPGA.",
+        [("115×", ["faster MNIST on the", "NPU than the CPU"]),
+         ("58.9", ["of 64 MACs/cycle", "on a full tile"]),
+         ("2.86", ["CoreMark/MHz,", "114/s at 40 MHz"])],
+        ["SystemVerilog", "Verilator", "cocotb", "RISC-V", "ECP5"])
+    H = big_card(svg, t, W, bottom, 384)
+    px, py, pw, ph = panel(svg, t, H, "Pulse SoC",
+                           "RV32IM · 8×8 INT8 systolic NPU · ECP5 @ 40 MHz")
+    fl = Flow(svg, t)
+    e = py + (ph - 332) / 2          # top of the drawing, centered in whatever height we got
+    x0, x1 = px + 24, px + pw - 24
+
+    # CPU with its pipeline
+    cpu_r = x0 + 198
+    svg.add(f'<rect x="{n(x0)}" y="{n(e + 84)}" width="{n(cpu_r - x0)}" height="84" rx="8" '
+            f'fill="{t["card"]}" stroke="{t["border"]}"/>')
+    svg.text(F["monom"], "RV32IM core", x0 + 12, e + 104, 12, t["text"])
+    sx = x0 + 12
+    for k, stage in enumerate(("IF", "ID", "EX", "MEM", "WB")):
+        w = F["mono"].width(stage, 10.5) + 12
+        svg.add(f'<rect x="{n(sx)}" y="{n(e + 116)}" width="{n(w)}" height="20" rx="4" '
+                f'fill="{t["chip"]}" stroke="{t["border"]}"/>')
+        svg.text(F["mono"], stage, sx + w / 2, e + 129.8, 10.5, t["text2"], anchor="middle")
+        sx += w
+        if k < 4:
+            svg.add(f'<path d="M{n(sx + 3)} {n(e + 122)} L{n(sx + 7)} {n(e + 126)} L{n(sx + 3)} '
+                    f'{n(e + 130)}" fill="none" stroke="{t["text3"]}" stroke-width="1.2"/>')
+            sx += 10
+    svg.text(F["mono"], "BTB · forwarding", x0 + 12, e + 157, 10.5, t["text3"])
+
+    # instruction memory
+    fl.box("IMEM", x0, e + 214, sub="64 KiB", w=86)
+    fl.arrow(x0 + 43, e + 194, x0 + 43, e + 171)
+    svg.text(F["mono"], "fetch", x0 + 50, e + 186, 10, t["text3"])
+
+    # NPU with the systolic array; a diagonal wavefront sweeps it the way operands do
+    npu_l, npu_r = cpu_r + 26, x1
+    svg.add(f'<rect x="{n(npu_l)}" y="{n(e + 84)}" width="{n(npu_r - npu_l)}" height="170" rx="8" '
+            f'fill="{t["card"]}" stroke="{t["accent"]}" stroke-opacity="0.7"/>')
+    svg.text(F["monom"], "NPU", npu_l + 12, e + 104, 12, t["text"])
+    svg.text(F["mono"], "INT8 MAC × 64", npu_r - 12, e + 104, 10.5, t["text3"], anchor="end")
+    cell, gap = 11, 4
+    gw = 8 * cell + 7 * gap
+    gx, gy = (npu_l + npu_r - gw) / 2 + 6, e + 124
+    period, step = 2.8, 0.11
+    svg.style.append(
+        "@keyframes pe{0%{fill-opacity:.16}9%{fill-opacity:.95}34%,100%{fill-opacity:.16}}"
+        f".pe{{animation:pe {period}s linear infinite}}"
+        "@media (prefers-reduced-motion:reduce){.pe{animation:none}}")
+    for i in range(8):
+        for j in range(8):
+            cx, cy = gx + j * (cell + gap), gy + i * (cell + gap)
+            # the static (reduced-motion) frame shows one wavefront frozen mid-array; negative
+            # delays start every cell mid-cycle, so the animation never flashes that frame
+            still = max(0.16, 0.95 - 0.28 * abs(i + j - 7))
+            svg.add(f'<rect class="pe" style="animation-delay:{(i + j) * step - period:.2f}s" '
+                    f'x="{n(cx)}" y="{n(cy)}" width="{cell}" height="{cell}" rx="2.5" '
+                    f'fill="{t["accent"]}" fill-opacity="{still:.2f}"/>')
+    # operands enter at the first row and column
+    svg.text(F["mono"], "A→", gx - 6, gy + cell / 2 + 3.6, 10, t["text3"], anchor="end")
+    svg.text(F["mono"], "B↓", gx + cell / 2, gy - 6, 10, t["text3"], anchor="middle")
+    fl.arrow(cpu_r + 3, e + 104, npu_l - 3, e + 104)
+    svg.text(F["mono"], "cmd", (cpu_r + npu_l) / 2, e + 97, 9.5, t["text3"], anchor="middle")
+
+    # banked data memory with a port for each side
+    dy = e + 300
+    svg.add(f'<rect x="{n(x0)}" y="{n(dy - 16)}" width="{n(x1 - x0)}" height="32" rx="7" '
+            f'fill="{t["card"]}" stroke="{t["border"]}"/>')
+    svg.text(F["monom"], "DMEM · 256 KiB · 4 dual-port banks", (x0 + x1) / 2, dy + 4.3, 12,
+             t["text"], anchor="middle")
+    cpu_port = cpu_r - 30
+    fl.arrow(cpu_port, e + 171, cpu_port, dy - 19, both=True)
+    svg.text(F["mono"], "32-bit", cpu_port - 7, e + 232, 10, t["text3"], anchor="end")
+    dma = (npu_l + npu_r) / 2
+    fl.arrow(dma, e + 257, dma, dy - 19, both=True)
+    svg.text(F["mono"], "DMA · 16 B/cycle", dma + 8, e + 273, 10, t["text3"])
+    return svg
+
+
+# ---------------------------------------------------------------------------- precis
+
+
+def precis(t, mode):
+    W = 1000
+    svg = Svg(W, 0, "Précis: parallel LLM agents that read and verify research papers",
+              "LLM agents read thousands of papers in parallel; a critic checks every claim against "
+              "a verbatim quote. Under simulated API rate limits it sustains 166 papers per minute "
+              "with zero 429 errors; a run killed with SIGKILL resumes with no request paid twice; "
+              "2,896 arXiv papers parsed. Diagram: fetch, reader agent, critic, reviser loop, topics "
+              "and report, with one gateway for every model call.")
+    x = 40
+    bottom = project_left(
+        svg, t, x, "LLM agents · Python", "Précis", "MatiiiBL/precis",
+        "LLM agents read thousands of papers in parallel: a reader navigates each paper with "
+        "tools, a critic checks every claim against a verbatim quote, and failed claims are "
+        "rewritten and checked again.",
+        [("166", ["papers/min under", "simulated rate limits"]),
+         ("0", ["requests paid twice", "after a SIGKILL"]),
+         ("2,896", ["arXiv papers", "parsed (99.2%)"])],
+        ["Python", "SQLite", "mypy --strict", "486 tests", "Batches API"])
+    H = big_card(svg, t, W, bottom, 384)
+    px, py, pw, ph = panel(svg, t, H, "Every paper, in parallel",
+                           "offline run: 2,889 papers read, verified and revised")
+    fl = Flow(svg, t)
+    e = py + (ph - 320) / 2
+    x0, x1 = px + 24, px + pw - 24
+
+    r1y, r2y, r3y = e + 104, e + 176, e + 238
+    s1 = fl.row([("arXiv", None, False), ("fetch · parse", "HTML / PDF", False),
+                 ("reader", "agent + tools", True)], x0, r1y)
+    s2 = fl.row([("critic", "quote per claim", True), ("topics", "TF-IDF + k-means", False),
+                 ("report", "+ static site", False)], x0, r2y)
+    fl.elbow((s1[-1][0] + s1[-1][1]) / 2, r1y + 20, (s2[0][0] + s2[0][1]) / 2, r2y - 20)
+
+    # verify / revise loop under the critic
+    c0, c1 = s2[0]
+    cx = (c0 + c1) / 2
+    rw = 86
+    fl.box("reviser", cx - rw / 2, r3y, w=rw)
+    fl.arrow(cx - 10, r2y + 23, cx - 10, r3y - 17)
+    fl.arrow(cx + 10, r3y - 17, cx + 10, r2y + 23)
+    nx = cx + rw / 2 + 12
+    nx += svg.text(F["mono"], "unsupported", nx, r3y + 4, 10, t["accent"])
+    svg.text(F["mono"], " → rewrite, verify again", nx, r3y + 4, 10, t["text3"])
+
+    # the gateway every model call goes through
+    gy = e + 288
+    svg.add(f'<rect x="{n(x0)}" y="{n(gy - 16)}" width="{n(x1 - x0)}" height="32" rx="7" '
+            f'fill="{t["accent_soft"]}" stroke="{t["accent"]}" stroke-opacity="0.45" '
+            f'stroke-dasharray="4 4"/>')
+    gw = svg.text(F["monom"], "gateway", x0 + 12, gy + 4.3, 12, t["accent"])
+    svg.text(F["mono"], "admission control · retries · cache · cost · batches", x0 + 24 + gw,
+             gy + 4, 10.5, t["text2"])
+    return svg
+
+
 # ---------------------------------------------------------------------------- minillm
 
 
@@ -639,39 +850,8 @@ def minillm(t, mode):
     svg.text(F["mono"], "SmolLM2-135M · 30 layers · d=576 · vocab 49,152", cx0, py + 52, 11.5,
              t["text3"])
 
-    def box(label, x, y, sub=None, accent=False, w=None):
-        size = 12
-        w = w or max(F["mono"].width(label, size), F["mono"].width(sub or "", 10.5)) + 22
-        h = 40 if sub else 28
-        stroke = t["accent"] if accent else t["border"]
-        svg.add(f'<rect x="{n(x)}" y="{n(y - h / 2)}" width="{n(w)}" height="{h}" rx="7" '
-                f'fill="{t["card"]}" stroke="{stroke}"' + (' stroke-opacity="0.7"' if accent else '')
-                + '/>')
-        if sub:
-            svg.text(F["monom"], label, x + w / 2, y - 2, size, t["text"], anchor="middle")
-            svg.text(F["mono"], sub, x + w / 2, y + 13, 10.5, t["text3"], anchor="middle")
-        else:
-            svg.text(F["monom"], label, x + w / 2, y + 4.3, size, t["text"], anchor="middle")
-        return w
-
-    svg.defs.append(f'<marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" '
-                    f'markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" '
-                    f'fill="none" stroke="{t["text3"]}" stroke-width="1.4" stroke-linecap="round" '
-                    f'stroke-linejoin="round"/></marker>')
-
-    def arrow(x1, y1, x2, y2):
-        svg.add(f'<line x1="{n(x1)}" y1="{n(y1)}" x2="{n(x2)}" y2="{n(y2)}" stroke="{t["text3"]}" '
-                f'stroke-width="1.2" marker-end="url(#ar)"/>')
-
-    def row(items, x, y, gap=22):
-        spans = []
-        for k, (label, sub, acc) in enumerate(items):
-            w = box(label, x, y, sub, acc)
-            spans.append((x, x + w))
-            if k < len(items) - 1:
-                arrow(x + w + 3, y, x + w + gap - 3, y)
-            x += w + gap
-        return spans
+    fl = Flow(svg, t)
+    box, arrow, row, elbow = fl.box, fl.arrow, fl.row, fl.elbow
 
     extra = (ph - 304) / 2
     r1y, r2y, r3y = py + 92 + extra, py + 168 + extra, py + 252 + extra
@@ -688,12 +868,6 @@ def minillm(t, mode):
               ("RMSNorm", None, False), ("SwiGLU", "MLP", False)], cx0 + 4, r2y, gap=20)
     s3 = row([("RMSNorm", None, False), ("LM head", "→ logits", False), ("sampler", None, False),
               ("next token", None, True)], cx0, r3y)
-
-    # row-to-row connectors
-    def elbow(xa, ya, xb, yb):
-        mid = (ya + yb) / 2
-        svg.add(f'<path d="M{n(xa)} {n(ya)} V{n(mid)} H{n(xb)} V{n(yb - 3)}" fill="none" '
-                f'stroke="{t["text3"]}" stroke-width="1.2" marker-end="url(#ar)"/>')
 
     elbow((s1[-1][0] + s1[-1][1]) / 2, r1y + 20, (s2[0][0] + s2[0][1]) / 2, r2y - 36)
     elbow((s2[-1][0] + s2[-1][1]) / 2, r2y + 36, (s3[0][0] + s3[0][1]) / 2, r3y - 14)
@@ -770,7 +944,8 @@ def main():
     ensure_fonts()
     load_faces()
     ASSETS.mkdir(exist_ok=True)
-    builders = {"banner": banner, "vecdex": vecdex, "minillm": minillm}
+    builders = {"banner": banner, "pulse": pulse, "vecdex": vecdex, "minillm": minillm,
+                "precis": precis}
     lines = max(len(slim_lines(spec["desc"])) for spec in SLIMS.values())
     slim_h = 110 + (lines - 1) * SLIM_DESC["lead"] + 36
     for mode, t in THEMES.items():

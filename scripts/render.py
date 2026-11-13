@@ -1114,13 +1114,13 @@ SLIMS = {
         alt="memo, AI category winner at the makeCU hackathon: a tendon-driven stroke-rehab glove; "
             "I owned the webcam hand tracking."),
     "wattsgood": dict(
-        kicker="Multi-agent LLM app", title="WattsGood", award="1ST PLACE · 8-HOUR HACKATHON",
-        desc="Three orchestrated Claude Haiku 4.5 agents (eligibility parsing, program matching, "
-             "plain-language explanation) connect low-income households to unclaimed energy "
-             "assistance. Built with a 4-person team.",
+        kicker="LLM app · React", title="WattsGood", award="1ST PLACE · 8-HOUR HACKATHON",
+        desc="A bilingual web app that turns a household's short intake into matching NYC "
+             "energy-assistance programs, benefit estimates and links, with Claude and web search "
+             "doing the eligibility reasoning. Built with a 4-person team.",
         tags=["JavaScript", "React", "Claude API"], repo="MatiiiBL/housing-energy-assistance",
-        alt="WattsGood, first place at an 8-hour hackathon: three orchestrated Claude agents that "
-            "match households to energy assistance programs."),
+        alt="WattsGood, first place at an 8-hour hackathon: a bilingual web app where Claude and web "
+            "search match NYC households to energy assistance programs."),
     "shellc": dict(
         kicker="Systems · POSIX", title="ShellC", award=None,
         desc="A bash-like Unix shell in C: quote-aware parser, builtins, fork/exec with exit-status "

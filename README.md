@@ -63,7 +63,7 @@ Right now I'm an AI engineer at **Forva Systems**, building the AI backend of an
 <a href="https://github.com/MatiiiBL/housing-energy-assistance">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/wattsgood-dark.svg">
-    <img alt="WattsGood, 1st place at an 8-hour hackathon: three orchestrated Claude agents that match households to energy assistance." src="assets/wattsgood-light.svg" width="100%">
+    <img alt="WattsGood, 1st place at an 8-hour hackathon: a bilingual web app where Claude and web search match NYC households to energy assistance programs." src="assets/wattsgood-light.svg" width="100%">
   </picture>
 </a>
 

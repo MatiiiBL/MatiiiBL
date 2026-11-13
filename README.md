@@ -5,7 +5,7 @@
 
 I'm a Computer Engineering student at Columbia (AI minor, class of 2029), originally from Montevideo. I like problems where the system has to be fast *and* right, from RTL and robotics to ML compilers and LLM pipelines. I profile before I optimize, check every fast path against a slow reference, and benchmark against the libraries people already use.
 
-Right now I'm an AI engineer at **Forva Systems**, building the AI backend of an EMS platform for ambulance crews, and I'm on **Columbia Formula Racing**.
+Outside class I'm on **Columbia Formula Racing**.
 
 [LinkedIn](https://www.linkedin.com/in/matias-blanco-uy/) · [matias.blancobalaguer@columbia.edu](mailto:matias.blancobalaguer@columbia.edu)
 
@@ -76,7 +76,7 @@ Right now I'm an AI engineer at **Forva Systems**, building the AI backend of an
 
 ### Experience
 
-**Forva Systems** · AI Engineer · New York · Dec 2025 – present<br>
+**Forva Systems** · AI Engineer · New York · Dec 2025 – Oct 2026<br>
 AI backend of an EMS platform for EMTs and paramedics. I designed the anti-hallucination guardrails for clinical LLM extraction (schema-constrained outputs, verbatim-quote provenance, gap-aware context windows, human sign-off on every medication) and a dev/held-out eval harness that scores word error rate, medical-term survival and number grounding.
 
 **Y Combinator Startup School** · Selected participant · San Francisco · Jul 2026<br>

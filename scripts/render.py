@@ -377,7 +377,7 @@ def banner(t, mode):
         svg.text(F["reg"], line, x0, 184 + i * 29, 20.5, t["text2"])
 
     xm = x0
-    for i, item in enumerate(["AI Engineer @ Forva", "NYC ← Montevideo", "Class of ’29"]):
+    for i, item in enumerate(["Student @ Columbia Engineering", "NYC ← Montevideo", "Class of ’29"]):
         if i:
             xm += 16
             svg.add(f'<circle cx="{n(xm)}" cy="255.5" r="2" fill="{t["accent"]}"/>')

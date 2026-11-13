@@ -10,6 +10,7 @@ downloaded into .fonts/ on the first run.
 """
 
 import io
+import json
 import math
 import random
 import subprocess
@@ -262,7 +263,9 @@ def pill(svg, t, s, x, y, size=11.5):
 
 
 def stat(svg, t, value, label_lines, x, y):
-    svg.text(F["disp"], value, x, y, 30, t["text"], tracking=-0.01, features={"tnum": True})
+    # Tabular figures keep the stats aligned, but they set a hyphen as wide as a digit.
+    features = None if "-" in value else {"tnum": True}
+    svg.text(F["disp"], value, x, y, 30, t["text"], tracking=-0.01, features=features)
     for i, line in enumerate(label_lines):
         svg.text(F["reg"], line, x, y + 22 + i * 17, 13, t["text2"])
 
@@ -352,7 +355,7 @@ def banner(t, mode):
     W, H = 1000, 300
     svg = Svg(W, H, "Matías Blanco",
               "Matías Blanco, Computer Engineering at Columbia University. I build fast, verified "
-              "systems from scratch: a RISC-V SoC, SIMD vector search, LLM inference. "
+              "systems from scratch: a RISC-V SoC, driverless racing, a tensor compiler. "
               "Illustration: a greedy search descending a three-layer HNSW graph.")
     card(svg, t, W, H)
 
@@ -370,7 +373,7 @@ def banner(t, mode):
     eyebrow(svg, t, "Computer Engineering · Columbia University", x0, 72, 13)
     svg.text(F["disp"], "Matías Blanco", x0 - 3, 140, 62, t["text"], tracking=-0.02)
     for i, line in enumerate(["I build fast, verified systems from scratch:",
-                              "a RISC-V SoC, SIMD vector search, LLM inference."]):
+                              "a RISC-V SoC, driverless racing, a tensor compiler."]):
         svg.text(F["reg"], line, x0, 184 + i * 29, 20.5, t["text2"])
 
     xm = x0
@@ -819,6 +822,197 @@ def precis(t, mode):
     return svg
 
 
+# ---------------------------------------------------------------------------- apex
+
+# One generated circuit from the planning evaluation: the cones as mapped on lap 1, the
+# centerline and the minimum-curvature raceline with its speed profile (x, y, m/s).
+APEX_TRACK = json.loads((ROOT / "scripts" / "data" / "apex_track.json").read_text())
+
+
+def fit_rotated(points, box_w, box_h):
+    """The rotation (in 1-degree steps) and scale that fit `points` largest into the box."""
+    best = None
+    for deg in range(180):
+        a = math.radians(deg)
+        c, s = math.cos(a), math.sin(a)
+        xs = [x * c - y * s for x, y in points]
+        ys = [x * s + y * c for x, y in points]
+        scale = min(box_w / (max(xs) - min(xs)), box_h / (max(ys) - min(ys)))
+        if best is None or scale > best[0] + 1e-9:
+            best = (scale, a, min(xs), max(xs), min(ys), max(ys))
+    return best
+
+
+def apex(t, mode):
+    W = 1000
+    d = APEX_TRACK
+    svg = Svg(W, 0, "Apex: an autonomous Formula Student Driverless stack in C++20",
+              "An autonomous racing stack and the simulator it races in. On a cone track it has "
+              "never seen, the car maps the cones on lap 1 with LiDAR, camera and EKF-SLAM, then "
+              "races laps 2 to 10 on a minimum-curvature raceline with model predictive control. "
+              "33 of 33 ten-lap runs on unseen tracks finished with no cone hit; median map error "
+              "1.4 cm after lap 1; the MPC's p99 compute time is 341 microseconds on one core. "
+              "Drawing: a generated circuit with its cones as mapped on lap 1, the centerline and "
+              "the raceline, and a car driving the raceline at its planned speed.")
+    x = 40
+    bottom = project_left(
+        svg, t, x, "Robotics · C++20", "Apex", "MatiiiBL/apex-driverless",
+        "A Formula Student Driverless stack and the simulator it races in. On a track it has "
+        "never seen, lap 1 maps the cones with LiDAR, camera and EKF-SLAM; laps 2–10 race a "
+        "minimum-curvature raceline with MPC.",
+        [("33/33", ["10-lap runs on unseen", "tracks, 0 cones hit"]),
+         ("1.4 cm", ["median map error", "after lap 1"]),
+         ("341 µs", ["MPC p99 on one", "core (budget 2 ms)"])],
+        ["C++20", "EKF-SLAM", "MPC", "Eigen", "507 tests"])
+    H = big_card(svg, t, W, bottom, 384)
+    px, py, pw, ph = panel(svg, t, H, "An unseen circuit, mapped then raced",
+                           "430 m generated track · cones as mapped on lap 1")
+
+    # the track, rotated to fill the left of the panel
+    bx0, by0 = px + 22, py + 72
+    bw, bh = 286, ph - 72 - 18
+    every = d["blue"] + d["yellow"]
+    scale, a, xmin, xmax, ymin, ymax = fit_rotated(every, bw, bh)
+    c, s = math.cos(a), math.sin(a)
+    ox = bx0 + (bw - (xmax - xmin) * scale) / 2
+    oy = by0 + (bh - (ymax - ymin) * scale) / 2
+
+    def P(p):  # world (m, y up) -> panel px (y down)
+        rx, ry = p[0] * c - p[1] * s, p[0] * s + p[1] * c
+        return ox + (rx - xmin) * scale, oy + (ymax - ry) * scale
+
+    def path(points):
+        return "M" + " L".join(f"{n(u)} {n(v)}" for u, v in map(P, points)) + "Z"
+
+    yellow = "#e0c045" if mode == "dark" else "#b58900"
+    svg.add(f'<path d="{path(d["centerline"])}" fill="none" stroke="{t["text3"]}" '
+            f'stroke-width="1" stroke-dasharray="3 3"/>')
+    for points, color in ((d["blue"], t["series"][1]), (d["yellow"], yellow)):
+        for p in points:
+            u, v = P(p)
+            svg.add(f'<circle cx="{n(u)}" cy="{n(v)}" r="2.1" fill="{color}"/>')
+    race = d["raceline"]
+    race_path = path(race)
+    svg.add(f'<path d="{race_path}" fill="none" stroke="{t["text"]}" stroke-width="1.8" '
+            f'stroke-linejoin="round"/>')
+
+    # the car laps the raceline at its planned speed (3x real time): key points from the
+    # speed profile, so it brakes into the corners and accelerates out of them
+    pts = [P(p) for p in race]
+    seg = [math.dist(pts[i], pts[(i + 1) % len(pts)]) for i in range(len(pts))]
+    dts = [seg[i] / (0.5 * (race[i][2] + race[(i + 1) % len(race)][2])) for i in range(len(race))]
+    total_len, total_t = sum(seg), sum(dts)
+    keys, times, acc_len, acc_t = [], [], 0.0, 0.0
+    for i in range(len(race)):
+        if i % 3 == 0:
+            keys.append(acc_len / total_len)
+            times.append(acc_t / total_t)
+        acc_len += seg[i]
+        acc_t += dts[i]
+    keys.append(1.0)
+    times.append(1.0)
+    dur = d["raceline_lap_s"] / 3
+    car = (f'<circle r="8" fill="{t["accent"]}" fill-opacity="0.22"/>'
+           f'<circle r="4.2" fill="{t["accent"]}" stroke="{t["card2"]}" stroke-width="1.6"/>')
+    svg.style.append(".cs{display:none}@media (prefers-reduced-motion:reduce){.cm{display:none}"
+                     ".cs{display:inline}}")
+    svg.add(f'<g class="cm">{car}<animateMotion dur="{dur:.2f}s" repeatCount="indefinite" '
+            f'calcMode="linear" keyPoints="{";".join(f"{k:.4f}" for k in keys)}" '
+            f'keyTimes="{";".join(f"{k:.4f}" for k in times)}" path="{race_path}"/></g>')
+    sx, sy = pts[len(pts) * 2 // 5]
+    svg.add(f'<g class="cs" transform="translate({n(sx)} {n(sy)})">{car}</g>')
+
+    # legend
+    lx, ly = px + 326, by0 + 14
+    def entry(swatch, label, sub):
+        nonlocal ly
+        svg.add(swatch(lx, ly))
+        svg.text(F["med"], label, lx + 26, ly + 4.5, 12.5, t["text"])
+        svg.text(F["mono"], sub, lx + 26, ly + 21, 10.5, t["text3"])
+        ly += 50
+    entry(lambda u, v: f'<line x1="{u}" y1="{v}" x2="{u + 16}" y2="{v}" stroke="{t["text"]}" '
+                       f'stroke-width="1.8" stroke-linecap="round"/>',
+          "raceline", f"{d['raceline_lap_s']:.1f} s per lap")
+    entry(lambda u, v: f'<line x1="{u}" y1="{v}" x2="{u + 16}" y2="{v}" stroke="{t["text3"]}" '
+                       f'stroke-dasharray="3 3"/>',
+          "centerline", f"{d['centerline_lap_s']:.1f} s per lap")
+    entry(lambda u, v: f'<circle cx="{u + 4}" cy="{v}" r="2.6" fill="{t["series"][1]}"/>'
+                       f'<circle cx="{u + 12}" cy="{v}" r="2.6" fill="{yellow}"/>',
+          "cones", "mapped on lap 1")
+    lo, hi = min(p[2] for p in race), max(p[2] for p in race)
+    entry(lambda u, v: f'<circle cx="{u + 8}" cy="{v}" r="4.2" fill="{t["accent"]}"/>',
+          "car", f"{lo:.0f}–{hi:.0f} m/s, 3× speed")
+    return svg
+
+
+# ---------------------------------------------------------------------------- tessera
+
+# Batch-1 float32 latency in ms on an Apple M4 (median of at least 50 runs), Tessera's Metal
+# backend against the fastest GPU and CPU baselines. Source:
+# github.com/MatiiiBL/tessera/blob/main/results/models.md
+TESSERA = [
+    ("ResNet-50", (10.71, 12.28, 12.14)),
+    ("MobileNetV2", (1.74, 6.62, 2.43)),
+    ("BERT-base", (10.31, 14.85, 21.97)),
+    ("GPT-2", (14.18, 22.13, 30.54)),
+]
+TESSERA_SERIES = ["Tessera · Metal", "PyTorch · MPS", "ONNX Runtime · CPU"]
+
+
+def tessera(t, mode):
+    W = 1000
+    svg = Svg(W, 0, "Tessera: a tensor compiler for Apple silicon",
+              "A tensor compiler that takes ONNX models through graph fusion, a TensorIR-style loop "
+              "IR and an autotuner with a learned cost model, to C with NEON and SME microkernels "
+              "or to Metal. On the M4 GPU it beats every baseline on all four models, GPT-2 by "
+              "1.56 times over PyTorch MPS, with every output within 3e-6 of ONNX Runtime. Chart: "
+              "batch-1 latency in milliseconds for ResNet-50, MobileNetV2, BERT-base and GPT-2: "
+              + "; ".join(f"{m} {v[0]} Tessera, {v[1]} PyTorch MPS, {v[2]} ONNX Runtime CPU"
+                          for m, v in TESSERA) + ".")
+    x = 40
+    bottom = project_left(
+        svg, t, x, "ML compiler · Python", "Tessera", "MatiiiBL/tessera",
+        "A tensor compiler for Apple silicon: ONNX models are fused, lowered to a TensorIR-style "
+        "loop IR, scheduled by an autotuner with a learned cost model, and compiled to C with "
+        "NEON and SME microkernels or to Metal.",
+        [("4/4", ["models where Metal", "beats every baseline"]),
+         ("1.56×", ["faster GPT-2 than", "PyTorch on the GPU"]),
+         ("3e-6", ["max relative error", "vs. ONNX Runtime"])],
+        ["Python", "C · NEON · SME", "Metal", "ONNX", "1,374 tests"])
+    H = big_card(svg, t, W, bottom, 384)
+    px, py, pw, ph = panel(svg, t, H, "Batch-1 latency on an Apple M4",
+                           "ms, lower is better · each model on its own scale")
+
+    lx = px + 24
+    for i, name in enumerate(TESSERA_SERIES):
+        svg.add(f'<rect x="{n(lx)}" y="{py + 71}" width="12" height="10" rx="2.5" '
+                f'fill="{t["series"][i]}"/>')
+        lx += 18 + svg.text(F["med"], name, lx + 18, py + 80.5, 12, t["text2"]) + 16
+
+    top, bottom_y = py + 104, py + ph - 14
+    row_h = (bottom_y - top) / len(TESSERA)
+    label_w, speed_w = 98, 52
+    bx0, bx1 = px + 24 + label_w, px + pw - 24 - speed_w - 34
+    bar, gap = 8, 3
+    svg.text(F["mono"], "speedup", px + pw - 24, top - 6, 10, t["text3"], anchor="end")
+    for r, (model, values) in enumerate(TESSERA):
+        y0 = top + r * row_h + (row_h - (3 * bar + 2 * gap)) / 2
+        mid = y0 + (3 * bar + 2 * gap) / 2
+        svg.text(F["med"], model, px + 24, mid + 4.5, 12.5, t["text"])
+        biggest = max(values)
+        for i, v in enumerate(values):
+            yb = y0 + i * (bar + gap)
+            w = (bx1 - bx0) * v / biggest
+            svg.add(f'<rect x="{n(bx0)}" y="{n(yb)}" width="{n(w)}" height="{bar}" rx="2" '
+                    f'fill="{t["series"][i]}"/>')
+            svg.text(F["mono"], f"{v:.1f}" if v >= 10 else f"{v:.2f}", bx0 + w + 6, yb + 7.2,
+                     10, t["text2"] if i else t["text"])
+        speedup = min(values[1:]) / values[0]
+        svg.text(F["semi"], f"{speedup:.2f}×", px + pw - 24, mid + 5, 14, t["text"],
+                 anchor="end")
+    return svg
+
+
 # ---------------------------------------------------------------------------- minillm
 
 
@@ -944,8 +1138,8 @@ def main():
     ensure_fonts()
     load_faces()
     ASSETS.mkdir(exist_ok=True)
-    builders = {"banner": banner, "pulse": pulse, "vecdex": vecdex, "minillm": minillm,
-                "precis": precis}
+    builders = {"banner": banner, "pulse": pulse, "apex": apex, "vecdex": vecdex,
+                "minillm": minillm, "tessera": tessera, "precis": precis}
     lines = max(len(slim_lines(spec["desc"])) for spec in SLIMS.values())
     slim_h = 110 + (lines - 1) * SLIM_DESC["lead"] + 36
     for mode, t in THEMES.items():
